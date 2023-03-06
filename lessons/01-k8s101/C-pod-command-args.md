@@ -5,7 +5,7 @@ description: " Kubectl explain pod  "
 
 ####  kubectl explain pods.spec.containers.command  
 
-```
+```sh
 k8s101 git:(main) ✗ kubectl explain pods.spec.containers.command  
 KIND:     Pod
 VERSION:  v1
@@ -31,7 +31,7 @@ command in Kubernetes overrides ENTRYPOINT in the original docker image.
 
 ##### commands.yaml
 
-```sh
+```yml
 apiVersion: v1
 kind: Pod
 metadata:

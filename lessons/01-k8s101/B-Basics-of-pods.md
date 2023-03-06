@@ -7,7 +7,7 @@ description: " Kubectl explain pod  "
 #### 0. What is POD learn via Kubectl Explain 
 
 
-```
+```sh
 kubectl explain pod 
 KIND:     Pod
 VERSION:  v1
@@ -119,6 +119,7 @@ Events:
 
 
 #### 3. Output the Manifest File
+
 ```sh
 kubectl run nginx --image=nginx --port=80 --dry-run=client -o yaml
 apiVersion: v1
@@ -142,7 +143,7 @@ status: {}
 alternative 
 
 
-```
+```sh
  kubectl run nginx --image=nginx --port=80 --dry-run=client -o yaml > ngnix.yaml
 ➜  k8sworkshop git:(main) ✗ ls
 LICENSE           context           data              ngnix.yaml        package.json      styles
@@ -274,7 +275,7 @@ FIELDS:
 
 ### Finding a Pod’s Cluster IP
 
-```
+```sh
 k8s101 git:(main) ✗ kubectl get pod -o wide
 NAME         READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
 nginx-pod    1/1     Running   0          95s    172.17.0.7   minikube   <none>           <none>
@@ -285,7 +286,8 @@ nginx-port   1/1     Running   0          108m   172.17.0.3   minikube   <none> 
 ### Finding a Service’s IP
 
 We can find a Service IP using kubectl as well. In this case we will list all services in all namespaces:
-````
+
+```sh
 ➜  k8s101 git:(main) ✗ kubectl get service --all-namespaces
 
 NAMESPACE              NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
@@ -299,7 +301,7 @@ kubernetes-dashboard   kubernetes-dashboard        ClusterIP   10.108.78.110   <
 ```
 
 
-```
+```sh
 ➜  k8s101 git:(main) ✗ kubectl get pod nginx-pod  --template='{{(index (index .spec.containers 0).ports 0).containerPort}}{{"\n"}}'
 8080
 

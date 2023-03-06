@@ -6,7 +6,7 @@ description: "  Multiple Way To creat Kubernetes cluster  "
 
 ### Install Minikube 
 
-```
+```sh
 https://minikube.sigs.k8s.io/docs/start/
 // i'm using mac so my installation step will be diffeent from you folks 
 
@@ -20,7 +20,7 @@ sudo install minikube-darwin-amd64 /usr/local/bin/minikube
 ### ceate cluster using minikube 
 
 
-```
+```sh
 ➜  k8sworkshop git:(main) ✗ minikube start    
 😄  minikube v1.28.0 on Darwin 13.2.1 (arm64)
 ✨  Using the docker driver based on existing profile
