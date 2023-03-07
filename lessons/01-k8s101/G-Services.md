@@ -158,19 +158,20 @@ To use the service from a pod, run a shell in the quote-001
  In my case, the quiz service uses cluster IP 10.99.118.40, whereas the quote service uses IP 10.98.242.63
 
 
+#### Access container outsusteride the clluster 
 
-##### Access container outsusteride the cl
 Now to access the container externally from the outside network we can use the public IP of individual worker node along with the NodePort
 
 curl https://<PUBLIC-IP>:<NODE-PORT>
-``````sh
+
+```sh
 kubectl get pods -o wide
 
-``````
-##### Creating a service through a YAML descriptor
+```
+#### Creating a service through a YAML descriptor
 
-``````sh
-[root@controller ~]# cat nginx-deploy.yml
+```sh
+[root@controller ~]# cat 2048.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -192,156 +193,94 @@ spec:
         ports:
         - containerPort: 80
           protocol: TCP
---
-kubectl create -f nginx-deploy.yml
-
-kubectl get pods -o wide
-
-``````
-
-``````sh
-##### Creating a NodePort service
---
-[root@controller ~]# cat nginx-service.yml
+-- ##### Creating a NodePort service
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-deploy
+  name: myservice
   labels:
-    app: dev
+    app: servicelabel
 spec:
   type: NodePort
   ports:
   - port: 80
-    protocol: TCP
   selector:
-    app: dev
--- # another example of nodeport service
-apiVersion: v1
-kind: Service
-metadata:
-  name: kiada
-spec:
-  type: NodePort
-  selector:
-    app: kiada
-  ports:
-  - name: http
-    port: 80
-    nodePort: 30080
-    targetPort: 8080
-  - name: https
-    port: 443
-    nodePort: 30443
-    targetPort: 8443
-----
-kubectl create -f nginx-service.yml
-kubectl get svc
-kubectl get svc --show-labels
+    app: "2048"
+```  
 
-kubectl describe service nginx-deploy
+```sh
+kubectl create -f 2048.yml
+```
 
-``````
+
+```sh
+➜  k8s101 git:(main) ✗ kubectl get pods -o wide
+NAME                                   READY   STATUS    RESTARTS   AGE     IP            NODE       NOMINATED NODE   READINESS GATES
+2048-deployment-9ccbf58bd-57tng        1/1     Running   0          50s     172.17.0.12   minikube   <none>           <none>
+2048-deployment-9ccbf58bd-78pnr        1/1     Running   0          50s     172.17.0.14   minikube   <none>           <none>
+2048-deployment-9ccbf58bd-mbfrt        1/1     Running   0          50s     172.17.0.13   minikube   <none>           <none>
+2048-deployment-9ccbf58bd-tfcnd        1/1     Running   0          50s     172.17.0.9    minikube   <none>           <none>
+2048-deployment-9ccbf58bd-trxqw        1/1     Running   0          50s     172.17.0.11   minikube   <none>           <none>
+kube-ops-view-5b596b7c7d-z2p2v         1/1     Running   0          7h37m   172.17.0.17   minikube   <none>           <none>
+kube-ops-view-redis-6dc75f67cd-klhpf   1/1     Running   0          7h37m   172.17.0.16   minikube   <none>           <none>
+lab-nginx-84756b7fc4-4qctt             1/1     Running   0          7h37m   172.17.0.19   minikube   <none>           <none>
+lab-nginx-84756b7fc4-rhg4m             1/1     Running   0          7h37m   172.17.0.18   minikube   <none>           <none>
+label-nginx-example-5f8bc677b9-6trt6   1/1     Running   0          7h37m   172.17.0.20   minikube   <none>           <none>
+my-release-kubeview-f7447cf6c-2w85w    1/1     Running   0          7h37m   172.17.0.21   minikube   <none>           <none>
+nginx-1-ff5997cdf-kpff9                1/1     Running   0          7h37m   172.17.0.7    minikube   <none>           <none>
+nginx-lab-1-84756b7fc4-77kvz           1/1     Running   0          7h37m   172.17.0.8    minikube   <none>           <none>
+nginx-lab-1-84756b7fc4-r9cmt           1/1     Running   0          7h37m   172.17.0.4    minikube   <none>           <none>
+nginx-lab-1-84756b7fc4-sqbf4           1/1     Running   0          7h37m   172.17.0.10   minikube   <none>           <none>
+
+```
+```sh
+➜  k8s101 git:(main) ✗ kubectl get svc
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP        31m
+myservice    NodePort    10.111.94.141   <none>        80:31487/TCP   2m55s
+```
+```sh
+➜  k8s101 git:(main) ✗ kubectl describe service myservice 
+Name:                     myservice
+Namespace:                default
+Labels:                   app=servicelabel
+Annotations:              <none>
+Selector:                 app=2048
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.111.94.141
+IPs:                      10.111.94.141
+Port:                     <unset>  80/TCP
+TargetPort:               80/TCP
+NodePort:                 <unset>  31487/TCP
+Endpoints:                172.17.0.11:80,172.17.0.12:80,172.17.0.13:80 + 2 more...
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+➜  k8s101 git:(main) ✗ 
+
+```
+
 ##### Accessing a NodePort service
 
-looking at the INTERNAL-IP and EXTERNAL-IP columns
-``````sh
-kubectl get nodes -o wide
-
-curl 172.18.0.4:30080
-
-``````
-
-##### Access container inside the cluster
-``````sh
-kubectl exec nginx-deploy-58f9bf94f7-4cwlr -- curl -s http://10.110.95.181
-``````
-##### Access container outside the cluster
-``````sh
-kubectl get svc
-
-Then try to access the pod using public IP of the respective worker node:
-``````
-
-##### Delete Kubernetes Service
-``````sh
-kubectl get svc
-
-kubectl delete service nginx-deploy
-``````
-##### Listing services
-When you create a service, it’s assigned an internal IP address that any workload running in the cluster can use to connect to the pods that are part of that service
-
-``````sh
-kubectl get svc -o wide
-
-``````
-##### Creating a LoadBalancer service
+```
+➜  k8s101 git:(main) ✗ minikube service myservice 
+|-----------|-----------|-------------|---------------------------|
+| NAMESPACE |   NAME    | TARGET PORT |            URL            |
+|-----------|-----------|-------------|---------------------------|
+| default   | myservice |          80 | http://192.168.49.2:31487 |
+|-----------|-----------|-------------|---------------------------|
+🏃  Starting tunnel for service myservice.
+|-----------|-----------|-------------|------------------------|
+| NAMESPACE |   NAME    | TARGET PORT |          URL           |
+|-----------|-----------|-------------|------------------------|
+| default   | myservice |             | http://127.0.0.1:60323 |
+|-----------|-----------|-------------|------------------------|
+🎉  Opening service default/myservice in default browser...
+❗  Because you are using a Docker driver on darwin, the terminal needs to be open to run it.
+```
 
 
-``````sh
-apiVersion: v1
-kind: Service
-metadata:
-  name: kiada
-spec:
-  type: LoadBalancer
-  selector:
-    app: kiada
-  ports:
-  - name: http
-    port: 80
-    nodePort: 30080
-    targetPort: 8080
-  - name: https
-    port: 443
-    nodePort: 30443
-    targetPort: 8443
-
-Apply the manifest with kubectl apply
-
-kubectl get svc kiada
-
-``````
-##### Endpoints object
-A service is typically backed by a set of pods whose labels match the label selector defined in the Service object.
-
-``````sh
-kubectl describe svc kiada
-
-kubectl get endpoints
-
------ # Inspecting an Endpoints object more closely
-kubectl get ep kiada -o yaml
 
 
-``````
-##### Creating a service without a label selector
-
-``````sh
-apiVersion: v1
-kind: Service
-metadata:
-  name: external-service
-spec:
-  ports:
-  - name: http
-    port: 80
-
-``````
-##### Creating an Endpoints object
-
-``````sh
-apiVersion: v1
-kind: Endpoints
-metadata:
-  name: external-service
-subsets:
-- addresses:
-  - ip: 1.1.1.1
-  - ip: 2.2.2.2
-  ports:
-  - name: http
-    port: 88
-
-``````

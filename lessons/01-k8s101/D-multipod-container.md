@@ -17,7 +17,7 @@ Sidecar containers:
 A log watcher, for example, can be built once by a different team and reused across different applications
 Another example of a sidecar container is a file or data loader that generates data for the main container.
 
-##### Communication Between Containers in a Pod
+#### Communication Between Containers in a Pod
 
 Shared volumes:
 you can use a shared Kubernetes Volume as a simple and efficient way to share data between containers in a Pod.

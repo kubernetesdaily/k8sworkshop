@@ -1,11 +1,9 @@
 ---
-title: " Deployments & replication "
-description: " Use Cases for Multi-Container Pods  "
+title: " Labels & Selectors "
+description: " Selectors Labels  "
 ---
 
-
-
-##### Labels -  Maps (aka Dictionaries)
+#### Labels -  Maps (aka Dictionaries)
 
 ```sh
 ➜  k8s101 git:(main) ✗ kubectl explain deployment.metadata.labels
@@ -33,7 +31,7 @@ env: prod
 
 ```
 
-##### Selectors -  Maps (aka Dictionaries)
+#### Selectors -  Maps (aka Dictionaries)
 
 - Labels are queryable — which makes them especially useful in organizing things <br>
 -  A label selector is a string that identifies which labels you are trying to match <br>
@@ -45,12 +43,12 @@ tier != frontend
 environment in (production, qa)
 ``````
 
-##### Annotations
+#### Annotations
 - Annotations are bits of useful information you might want to store about a pod (or cluster, node, etc.) that you will not have to query against.
 - They are also key/value pairs and have the same rules as labels.
 - Examples of things you might put there are the pager contact, the build date, or a pointer to more information someplace else—like a URL.
 
-##### Method-1: Assign labels while creating a new object
+#### Method-1: Assign labels while creating a new object
 
 ```sh
 kubectl create deployment label-nginx-example --image=nginx --dry-run=client -oyaml > label-nginx-example.yml
@@ -101,9 +99,10 @@ label-nginx-example-848d6df75-x8bb6   1/1     Running   0          45s   app=lab
 ```
 
 
-#####  Assign a new label to existing pod runtime as a patch
+####  Assign a new label to existing pod runtime as a patch
 
 will assign new label "tier: frontend" to our existing Pods from the deployment label-nginx-example
+
 ```sh
 [root@controller ~]# cat update-label.yml
 spec:
@@ -115,12 +114,12 @@ spec:
 
 ### Next patch the deployment with this YAML file
 
-```
+```sh
 ➜  k8s101 git:(main) ✗ kubectl patch deployment label-nginx-example --patch "$(cat update-label.yml)"
 deployment.apps/label-nginx-example patched
 ```
 
-```
+```sh
 ➜  k8s101 git:(main) ✗ kubectl describe deployment label-nginx-example
 Name:                   label-nginx-example
 Namespace:              default
@@ -158,14 +157,14 @@ Events:
   Normal  ScalingReplicaSet  70s    deployment-controller  Scaled down replica set label-nginx-example-848d6df75 to 0 from 1
 ➜  k8s101 git:(main) ✗ 
 ```
-```
+```sh
 ➜  k8s101 git:(main) ✗ kubectl get pods --show-labels
 NAME                                   READY   STATUS    RESTARTS   AGE     LABELS
 label-nginx-example-5f8bc677b9-92lp9   1/1     Running   0          7m31s   app=label-nginx-example,pod-template-hash=5f8bc677b9,tier=frontend
 ```
 
 
-#####  Method-3: Assign a new label to existing deployments runtime using kubectl
+####  Method-3: Assign a new label to existing deployments runtime using kubectl
 
 I have another deployment nginx-deploy on my cluster, so I will assign label tier: backend to this deployment:
 
@@ -175,7 +174,7 @@ kubectl label deployment nginx-deploy tier=backend
 kubectl get deployments --show-labels
 
 ```
-#####  Using labels to list resource objects
+####  Using labels to list resource objects
 
 ```sh
 kubectl get pods --show-labels
@@ -190,7 +189,7 @@ kubectl get deployments -l type=dev
 kubectl get pods -l app=prod
 ```
 
-#####  Using Selector to list resource objects
+####  Using Selector to list resource objects
 
 I will create another deployment here with two labels and use one of the label as selector:
 

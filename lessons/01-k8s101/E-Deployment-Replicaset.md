@@ -87,7 +87,7 @@ FIELDS:
 ➜  k8sworkshop git:(main) ✗ 
 ```
 
-##### Overview on Kubernetes Deployment
+#### Overview on Kubernetes Deployment
 
 Kubernetes also provides Deployment resource that sits on top of ReplicaSets and enables declarative application updates. 
 
@@ -259,8 +259,6 @@ The RollingUpdate strategy options are used to guarantee a certain minimal and m
 - maxUnavailable: The maximum number of Pods that can be unavailable during updating. The value could be a percentage (the default is 25%).
 - maxSurge: The maximum number of Pods that can be created over the desired number of ReplicaSet during updating.  the value of maxSurge cannot be 0
 
---
-
 
 ```sh
 vim rolling-nginx.yml
@@ -320,7 +318,8 @@ LAST SEEN   TYPE     REASON      OBJECT                               MESSAGE
 43s         Normal   Created     pod/rolling-nginx-77f89bcf9c-xn2z5   Created container nginx
 43s         Normal   Started     pod/rolling-nginx-77f89bcf9c-xn2z5   Started container nginx
 ```
-##### Check rollout history
+#### Check rollout history
+
 But why CHANGE-CAUSE is showing NONE? It is because we have not used --record while creating our deployment. 
 The --record argument will add the command under CHANGE-CAUSE for each revision history
 ```sh
@@ -351,7 +350,7 @@ REVISION  CHANGE-CAUSE
 Flag --record has been deprecated, --record will be removed in the future
 deployment.apps/rolling-nginx image updated
 ```
-##### Monitor the rolling update status
+#### Monitor the rolling update status
 
 To monitor the rollout status you can use:
 
@@ -381,7 +380,7 @@ rolling-nginx-55fc56899f-jngcd   1/1     Running   0          2m21s
 deployment.apps/rolling-nginx resumed
 ```
 
-##### Rolling back (undo) an update
+#### Rolling back (undo) an update
 To monitor the rollout status you can use:
 
 ```sh
