@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dev
+  name: nginx-lab-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dev
+  template:
+    metadata:
+      labels:
+        app: dev
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+
+---
+# cat quote for pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: quote
+spec:
+  type: ClusterIP
+  selector:
+    app: quote
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
